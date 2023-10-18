@@ -22,8 +22,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _repository = WeatherRepository();
     _storageService = StorageService();
+    _repository = WeatherRepository(_storageService);
   }
 
   @override
@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Flutter Demo',
       theme: ThemeData.dark(useMaterial3: true),
       home: Provider<WeatherViewModel>(
-        create: (_) => WeatherViewModel(_repository, _storageService),
+        create: (_) => WeatherViewModel(_repository),
         builder: (_, __) => const WeatherScreen(),
       ),
     );

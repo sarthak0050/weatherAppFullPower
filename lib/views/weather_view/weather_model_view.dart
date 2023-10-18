@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
-
-import 'dart:convert';
-import 'package:weather_application_weekend_practice/app/services/storage_service.dart';
 import 'package:weather_application_weekend_practice/features/weather/weather_model.dart';
 import 'package:weather_application_weekend_practice/features/weather/weather_repo.dart';
 
@@ -11,9 +8,8 @@ const String openWeatherApiKey = 'e0626abb9bc6839d5105f609cac69906';
 
 class WeatherViewModel {
   final WeatherRepository _repository;
-  final StorageService _storageService;
 
-  WeatherViewModel(this._repository, this._storageService);
+  WeatherViewModel(this._repository);
 
   final ValueNotifier<WeatherModel?> _weatherNotifier = ValueNotifier(null);
 
@@ -21,9 +17,9 @@ class WeatherViewModel {
   Position? position;
 
   Future<void> initialise() async {
-    final String? sp = await _storageService.get('jsonString');
+    final WeatherModel? sp = await _repository.getWeatherFromStorage();
     if (sp != null) {
-      _weatherNotifier.value = WeatherModel.fromMap(jsonDecode(sp));
+      _weatherNotifier.value = sp;
     } else {
       await _getCurrentPosition();
       await getWeather();
@@ -70,11 +66,6 @@ class WeatherViewModel {
     } else {
       response = await _repository.getRandomWeather();
     }
-
     _weatherNotifier.value = response;
-
-    // await _storageService.save('jsonString', response.toJson());
-    String json = await _repository.getWeatherInJsonForm();
-    await _storageService.save('jsonString', json);
   }
 }
